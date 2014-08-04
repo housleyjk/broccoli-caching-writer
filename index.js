@@ -5,7 +5,7 @@ var mkdirp = require('mkdirp')
 var walkSync = require('walk-sync');
 var quickTemp = require('quick-temp')
 var Writer = require('broccoli-writer');
-var helpers = require('broccoli-kitchen-sink-helpers')
+var helpers = require('broccoli-kitchen-sink-helpers');
 
 CachingWriter.prototype = Object.create(Writer.prototype);
 CachingWriter.prototype.constructor = CachingWriter;
@@ -85,7 +85,11 @@ function linkFromCache(srcDir, destDir) {
 
     destFile = path.join(destDir, file);
     mkdirp.sync(path.dirname(destFile));
-    fs.linkSync(srcFile, destFile);
+    try {
+      fs.linkSync(srcFile, destFile);
+    } catch (error) {
+      fs.writeFileSync(destFile, fs.readFileSync(srcFile));
+    }
   }
 }
 
